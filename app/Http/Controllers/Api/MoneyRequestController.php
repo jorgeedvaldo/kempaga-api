@@ -126,7 +126,7 @@ class MoneyRequestController extends Controller
         $data = $request->validated();
 
         // Apenas o receiver pode aceitar/rejeitar
-        if ($moneyRequest->receiver_id !== $user->id) {
+        if ((int)$moneyRequest->receiver_id !== (int)$user->id) {
             return response()->json([
                 'message' => 'Não tem permissão para alterar este pedido.',
             ], 403);
