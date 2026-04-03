@@ -11,8 +11,7 @@ use Laravel\Sanctum\HasApiTokens;
  * Modelo de Utilizador.
  *
  * Representa um utilizador da aplicação "Quem Paga".
- * Suporta autenticação via Sanctum (token) e verificação de PIN
- * para operações financeiras sensíveis.
+ * Suporta autenticação via Sanctum (token).
  */
 class User extends Authenticatable
 {
@@ -29,7 +28,6 @@ class User extends Authenticatable
         'email',
         'phone',
         'password',
-        'pin',
         'type',
         'status',
         'bi_number',
@@ -43,7 +41,6 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
-        'pin',
         'remember_token',
     ];
 

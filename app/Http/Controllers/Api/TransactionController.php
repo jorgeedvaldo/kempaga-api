@@ -11,7 +11,7 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
+
 
 /**
  * Controlador de Transações.
@@ -56,9 +56,8 @@ class TransactionController extends Controller
      * Criar uma transferência P2P (enviar dinheiro).
      *
      * Processo:
-     * 1. Verificar PIN do remetente
-     * 2. Verificar saldo suficiente
-     * 3. Dentro de uma transação DB:
+     * 1. Verificar saldo suficiente
+     * 2. Dentro de uma transação DB:
      *    - Debitar carteira do remetente
      *    - Creditar carteira do destinatário
      *    - Criar registos de transação para ambos
@@ -72,21 +71,14 @@ class TransactionController extends Controller
         $sender = $request->user();
         $data = $request->validated();
 
-        // 1. Verificar PIN
-        if (!Hash::check($data['pin'], $sender->pin)) {
-            return response()->json([
-                'message' => 'PIN inválido.',
-            ], 422);
-        }
-
-        // 2. Não permitir envio para si próprio
+        // 1. Não permitir envio para si próprio
         if ($sender->id == $data['receiver_id']) {
             return response()->json([
                 'message' => 'Não pode enviar dinheiro para si próprio.',
             ], 422);
         }
 
-        // 3. Verificar destinatário
+        // 2. Verificar destinatário
         $receiver = User::findOrFail($data['receiver_id']);
         $senderWallet = $sender->wallet;
         $receiverWallet = $receiver->wallet;
@@ -101,7 +93,7 @@ class TransactionController extends Controller
         $charge = TransactionHelper::calculateCharge($amount, 'transfer');
         $netAmount = $amount - $charge;
 
-        // 4. Verificar saldo suficiente
+        // 3. Verificar saldo suficiente
         if ($senderWallet->balance < $amount) {
             return response()->json([
                 'message' => 'Saldo insuficiente.',
@@ -109,7 +101,7 @@ class TransactionController extends Controller
             ], 422);
         }
 
-        // 5. Processar a transferência dentro de uma transação DB
+        // 4. Processar a transferência dentro de uma transação DB
         $result = DB::transaction(function () use ($sender, $receiver, $senderWallet, $receiverWallet, $amount, $charge, $netAmount, $data) {
 
             // Debitar remetente

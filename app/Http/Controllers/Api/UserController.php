@@ -55,7 +55,7 @@ class UserController extends Controller
     /**
      * Mostrar perfil público de um utilizador.
      *
-     * Retorna apenas dados públicos (sem password, PIN, BI).
+     * Retorna apenas dados públicos (sem password, BI).
      *
      * @param  User  $user
      * @return JsonResponse

@@ -23,7 +23,7 @@ class UpdateMoneyRequestRequest extends FormRequest
     {
         return [
             'status' => ['required', 'in:accepted,rejected'],
-            'pin'    => ['required_if:status,accepted', 'string', 'digits_between:4,6'],
+
         ];
     }
 
@@ -37,7 +37,7 @@ class UpdateMoneyRequestRequest extends FormRequest
         return [
             'status.required' => 'O estado é obrigatório.',
             'status.in'       => 'O estado deve ser "accepted" ou "rejected".',
-            'pin.required_if' => 'O PIN é obrigatório para aceitar pedidos.',
+
         ];
     }
 }

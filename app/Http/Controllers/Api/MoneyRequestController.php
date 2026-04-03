@@ -13,7 +13,7 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
+
 
 /**
  * Controlador de Pedidos de Dinheiro.
@@ -139,12 +139,7 @@ class MoneyRequestController extends Controller
             ]);
         }
 
-        // Aceitar → verificar PIN e processar transferência
-        if (!Hash::check($data['pin'], $user->pin)) {
-            return response()->json([
-                'message' => 'PIN inválido.',
-            ], 422);
-        }
+        // Aceitar → processar transferência
 
         $receiverWallet = $user->wallet;            // Quem paga (receiver do pedido)
         $senderWallet = $moneyRequest->sender->wallet; // Quem recebe o dinheiro

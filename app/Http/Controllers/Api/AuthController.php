@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\Auth\LoginRequest;
-use App\Http\Requests\Auth\VerifyPinRequest;
+
 use App\Models\User;
 use App\Models\Wallet;
 use Illuminate\Http\JsonResponse;
@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Storage;
 /**
  * Controlador de Autenticação.
  *
- * Gere o registo, login, logout e verificação de PIN
+ * Gere o registo, login e logout
  * usando Laravel Sanctum para tokens de API.
  */
 class AuthController extends Controller
@@ -41,14 +41,13 @@ class AuthController extends Controller
             $imageUrl = Storage::url($path);
         }
 
-        // Criar o utilizador com password e PIN em hash
+        // Criar o utilizador com password em hash
         $user = User::create([
             'first_name' => $data['first_name'],
             'last_name'  => $data['last_name'],
             'email'      => $data['email'],
             'phone'      => $data['phone'],
             'password'   => Hash::make($data['password']),
-            'pin'        => Hash::make($data['pin']),
             'type'       => $data['type'] ?? 'personal',
             'bi_number'  => $data['bi_number'],
             'image_url'  => $imageUrl,
@@ -139,29 +138,4 @@ class AuthController extends Controller
         ]);
     }
 
-    /**
-     * Verificar o PIN do utilizador.
-     *
-     * Usado antes de operações financeiras sensíveis
-     * para confirmar a identidade do utilizador.
-     *
-     * @param  VerifyPinRequest  $request
-     * @return JsonResponse
-     */
-    public function verifyPin(VerifyPinRequest $request): JsonResponse
-    {
-        $user = $request->user();
-
-        if (!Hash::check($request->pin, $user->pin)) {
-            return response()->json([
-                'message' => 'PIN inválido.',
-                'valid'   => false,
-            ], 422);
-        }
-
-        return response()->json([
-            'message' => 'PIN verificado com sucesso.',
-            'valid'   => true,
-        ]);
-    }
 }

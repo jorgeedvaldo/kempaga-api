@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Schema;
  *
  * Estrutura principal para o sistema "Quem Paga":
  * - Dados pessoais (nome, email, telefone, BI)
- * - Autenticação (password + PIN para operações sensíveis)
+ * - Autenticação (password)
  * - Tipo de conta e estado
  * - Foto de perfil
  */
@@ -29,7 +29,6 @@ return new class extends Migration
 
             // Autenticação
             $table->string('password');              // Hash da password
-            $table->string('pin');                   // Hash do PIN (4-6 dígitos)
 
             // Tipo e estado da conta
             $table->enum('type', ['personal', 'merchant'])->default('personal');
