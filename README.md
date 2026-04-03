@@ -88,11 +88,6 @@ Authorization: Bearer {token}
 4. POST /api/auth/logout    →  Token revogado / Token revoked
 ```
 
-### Verificação de PIN / PIN Verification
-
-**PT:** Operações financeiras sensíveis (transferências, aceitar pedidos) requerem o PIN do utilizador. O PIN é um código de 4 a 6 dígitos definido no registo.
-
-**EN:** Sensitive financial operations (transfers, accepting requests) require the user's PIN. The PIN is a 4-6 digit code set during registration.
 
 ---
 
@@ -147,7 +142,7 @@ Todas as respostas são em JSON. / All responses are in JSON.
 | `phone` | `string` | ✅ | Telefone / Phone (único / unique, max: 20) |
 | `password` | `string` | ✅ | Password (min: 6) |
 | `password_confirmation` | `string` | ✅ | Confirmação / Confirmation |
-| `pin` | `string` | ✅ | PIN financeiro / Financial PIN (4-6 dígitos / digits) |
+
 | `bi_number` | `string` | ✅ | Número do BI / ID card number (único / unique) |
 | `type` | `string` | ❌ | `personal` (padrão/default) ou/or `merchant` |
 | `image` | `file` | ❌ | Foto de perfil / Profile photo (jpeg, png, jpg; max: 5MB) |
@@ -255,34 +250,6 @@ Todas as respostas são em JSON. / All responses are in JSON.
 
 ---
 
-#### `POST /api/auth/verify-pin`
-
-**PT:** Verificar se o PIN é correto (para confirmar antes de operações).
-**EN:** Verify if PIN is correct (to confirm before operations).
-
-🔒 **Protegido / Protected**
-
-| Campo / Field | Tipo / Type | Obrigatório / Required | Descrição / Description |
-|---|---|---|---|
-| `pin` | `string` | ✅ | PIN (4-6 dígitos / digits) |
-
-**Resposta / Response — `200 OK`:**
-```json
-{
-  "message": "PIN verificado com sucesso.",
-  "valid": true
-}
-```
-
-**Erro / Error — `422`:**
-```json
-{
-  "message": "PIN inválido.",
-  "valid": false
-}
-```
-
----
 
 ### 2. 💰 Carteira / Wallet
 
@@ -389,8 +356,8 @@ GET /api/transactions?type=send&status=completed&page=1
 
 #### `POST /api/transactions`
 
-**PT:** Enviar dinheiro para outro utilizador (transferência P2P). Requer PIN.
-**EN:** Send money to another user (P2P transfer). Requires PIN.
+**PT:** Enviar dinheiro para outro utilizador (transferência P2P).
+**EN:** Send money to another user (P2P transfer).
 
 🔒 **Protegido / Protected**
 
@@ -399,7 +366,7 @@ GET /api/transactions?type=send&status=completed&page=1
 | `receiver_id` | `integer` | ✅ | ID do destinatário / Receiver user ID |
 | `amount` | `numeric` | ✅ | Montante (min: 1) / Amount (min: 1) |
 | `note` | `string` | ❌ | Nota/descrição / Note (max: 500) |
-| `pin` | `string` | ✅ | PIN de autorização / Authorization PIN (4-6 dígitos / digits) |
+
 
 **Resposta / Response — `201 Created`:**
 ```json
@@ -434,7 +401,7 @@ GET /api/transactions?type=send&status=completed&page=1
 ```
 
 **Erros / Errors:**
-- `422` — PIN inválido / Invalid PIN
+
 - `422` — Saldo insuficiente / Insufficient balance
 - `422` — Não pode enviar a si próprio / Cannot send to yourself
 
@@ -580,7 +547,7 @@ GET /api/money-requests?filter=received&status=pending
 | Campo / Field | Tipo / Type | Obrigatório / Required | Descrição / Description |
 |---|---|---|---|
 | `status` | `string` | ✅ | `accepted` ou/or `rejected` |
-| `pin` | `string` | ✅ (se aceitar / if accepting) | PIN de autorização / Authorization PIN |
+
 
 **Resposta ao Aceitar / Accept Response — `200 OK`:**
 ```json
@@ -607,7 +574,7 @@ GET /api/money-requests?filter=received&status=pending
 **Erros / Errors:**
 - `403` — Sem permissão / No permission (não é o receiver / not the receiver)
 - `422` — Pedido já processado / Request already processed
-- `422` — PIN inválido / Invalid PIN
+
 - `422` — Saldo insuficiente / Insufficient balance
 
 ---
@@ -775,7 +742,7 @@ GET /api/users/search?query=maria
 | `email` | `string` (unique) | Email |
 | `phone` | `string` (unique) | Telefone / Phone |
 | `password` | `string` (hash) | Password (bcrypt hash) |
-| `pin` | `string` (hash) | PIN financeiro / Financial PIN (bcrypt hash) |
+
 | `type` | `enum` | `personal` \| `merchant` |
 | `status` | `enum` | `active` \| `inactive` \| `blocked` |
 | `bi_number` | `string` (unique) | Número do BI / ID card number |
@@ -922,9 +889,6 @@ The API uses Laravel Form Requests for automatic validation. Validation errors r
   "errors": {
     "email": [
       "Este email já está registado."
-    ],
-    "pin": [
-      "O PIN deve ter entre 4 e 6 dígitos."
     ]
   }
 }
@@ -936,7 +900,7 @@ The API uses Laravel Form Requests for automatic validation. Validation errors r
 |---|---|---|
 | `RegisterRequest` | `app/Http/Requests/Auth/` | `POST /auth/register` |
 | `LoginRequest` | `app/Http/Requests/Auth/` | `POST /auth/login` |
-| `VerifyPinRequest` | `app/Http/Requests/Auth/` | `POST /auth/verify-pin` |
+
 | `StoreTransactionRequest` | `app/Http/Requests/Transaction/` | `POST /transactions` |
 | `StoreMoneyRequestRequest` | `app/Http/Requests/MoneyRequest/` | `POST /money-requests` |
 | `UpdateMoneyRequestRequest` | `app/Http/Requests/MoneyRequest/` | `PUT /money-requests/{id}` |
@@ -965,8 +929,7 @@ app/
 │   └── Requests/
 │       ├── Auth/
 │       │   ├── LoginRequest.php
-│       │   ├── RegisterRequest.php
-│       │   └── VerifyPinRequest.php
+│       │   └── RegisterRequest.php
 │       ├── MoneyRequest/
 │       │   ├── StoreMoneyRequestRequest.php
 │       │   └── UpdateMoneyRequestRequest.php
