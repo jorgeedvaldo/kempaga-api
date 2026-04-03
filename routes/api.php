@@ -65,7 +65,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('money-requests')->group(function () {
         Route::get('/', [MoneyRequestController::class, 'index']);
         Route::post('/', [MoneyRequestController::class, 'store']);
-        Route::put('/{moneyRequest}', [MoneyRequestController::class, 'update']);
+        Route::put('/{moneyRequest}/respond', [MoneyRequestController::class, 'update']);
         Route::delete('/{moneyRequest}', [MoneyRequestController::class, 'destroy']);
     });
 
