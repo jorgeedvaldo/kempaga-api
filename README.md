@@ -537,7 +537,7 @@ GET /api/money-requests?filter=received&status=pending
 
 ---
 
-#### `PUT /api/money-requests/{id}`
+#### `PUT /api/money-requests/{id}/respond`
 
 **PT:** Aceitar ou rejeitar um pedido de dinheiro. Apenas o `receiver` (quem deve pagar) pode responder. Se aceitar, a transferência é processada automaticamente.
 **EN:** Accept or reject a money request. Only the `receiver` (payer) can respond. If accepted, the transfer is processed automatically.
@@ -547,6 +547,7 @@ GET /api/money-requests?filter=received&status=pending
 | Campo / Field | Tipo / Type | Obrigatório / Required | Descrição / Description |
 |---|---|---|---|
 | `status` | `string` | ✅ | `accepted` ou/or `rejected` |
+| `note` | `string` | ❌ | Justificação da rejeição / Rejection reason (max: 500) |
 
 
 **Resposta ao Aceitar / Accept Response — `200 OK`:**
@@ -973,7 +974,7 @@ The API uses Laravel Form Requests for automatic validation. Validation errors r
 
 | `StoreTransactionRequest` | `app/Http/Requests/Transaction/` | `POST /transactions` |
 | `StoreMoneyRequestRequest` | `app/Http/Requests/MoneyRequest/` | `POST /money-requests` |
-| `UpdateMoneyRequestRequest` | `app/Http/Requests/MoneyRequest/` | `PUT /money-requests/{id}` |
+| `UpdateMoneyRequestRequest` | `app/Http/Requests/MoneyRequest/` | `PUT /money-requests/{id}/respond` |
 | `UpdateProfileRequest` | `app/Http/Requests/User/` | `PUT /users/profile` |
 
 ---
