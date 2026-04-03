@@ -28,10 +28,10 @@ class User extends Authenticatable
         'email',
         'phone',
         'password',
-        'type',
         'status',
         'bi_number',
         'image_url',
+        'device_token',
     ];
 
     /**

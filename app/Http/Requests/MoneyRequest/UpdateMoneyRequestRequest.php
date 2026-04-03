@@ -23,7 +23,7 @@ class UpdateMoneyRequestRequest extends FormRequest
     {
         return [
             'status' => ['required', 'in:accepted,rejected'],
-
+            'note'   => ['nullable', 'string', 'max:500'],
         ];
     }
 

@@ -91,6 +91,16 @@ class MoneyRequestController extends Controller
             'status' => 'pending',
         ]);
 
+        $receiverUser = User::find($data['receiver_id']);
+        if ($receiverUser) {
+            \App\Helpers\ExpoPushHelper::send(
+                $receiverUser->device_token,
+                'Novo Pedido de Dinheiro!',
+                "{$sender->first_name} está a pedir {$data['amount']} AOA.",
+                ['type' => 'money_request_received', 'request_id' => $moneyRequest->id]
+            );
+        }
+
         return response()->json([
             'message' => 'Pedido de dinheiro criado com sucesso.',
             'money_request' => $moneyRequest->load([
@@ -129,9 +139,19 @@ class MoneyRequestController extends Controller
             ], 422);
         }
 
-        // Se rejeitar, apenas atualizar o estado
+        // Se rejeitar, atualizar o estado e a nota (se fornecida)
         if ($data['status'] === 'rejected') {
-            $moneyRequest->update(['status' => 'rejected']);
+            $moneyRequest->update([
+                'status' => 'rejected',
+                'note'   => $data['note'] ?? $moneyRequest->note
+            ]);
+
+            \App\Helpers\ExpoPushHelper::send(
+                $moneyRequest->sender->device_token,
+                'Pedido Rejeitado',
+                "O seu pedido de {$moneyRequest->amount} AOA para {$user->first_name} foi rejeitado.",
+                ['type' => 'money_request_rejected', 'request_id' => $moneyRequest->id]
+            );
 
             return response()->json([
                 'message' => 'Pedido rejeitado.',
@@ -236,6 +256,14 @@ class MoneyRequestController extends Controller
             ], $status);
         }
 
+        // Notificar quem solicitou o dinheiro (sender)
+        \App\Helpers\ExpoPushHelper::send(
+            $moneyRequest->sender->device_token,
+            'Pedido Aceite!',
+            "{$user->first_name} enviou os {$moneyRequest->amount} AOA que solicitou.",
+            ['type' => 'money_request_accepted', 'request_id' => $moneyRequest->id]
+        );
+
         return response()->json([
             'message' => 'Pedido aceite e transferência processada.',
             'money_request' => $moneyRequest->fresh()->load([
@@ -256,8 +284,8 @@ class MoneyRequestController extends Controller
      */
     public function destroy(Request $request, MoneyRequest $moneyRequest): JsonResponse
     {
-        // Apenas o sender pode cancelar
-        if ($moneyRequest->sender_id !== $request->user()->id) {
+        // Apenas o sender (quem emitiu o pedido) pode cancelar
+        if ((int)$moneyRequest->sender_id !== (int)$request->user()->id) {
             return response()->json([
                 'message' => 'Não tem permissão para cancelar este pedido.',
             ], 403);

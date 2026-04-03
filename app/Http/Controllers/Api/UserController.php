@@ -150,4 +150,24 @@ class UserController extends Controller
             'image_url' => $user->image_url,
         ]);
     }
+    /**
+     * Atualizar o token de dispositivo para Push Notifications (Expo).
+     *
+     * @param  Request  $request
+     * @return JsonResponse
+     */
+    public function updateDeviceToken(Request $request): JsonResponse
+    {
+        $request->validate([
+            'token' => ['required', 'string'],
+        ]);
+
+        $request->user()->update([
+            'device_token' => $request->token,
+        ]);
+
+        return response()->json([
+            'message' => 'Device token atualizado com sucesso.',
+        ]);
+    }
 }

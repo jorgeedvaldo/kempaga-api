@@ -71,6 +71,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // --- Utilizadores ---
     Route::prefix('users')->group(function () {
+        Route::post('/device-token', [UserController::class, 'updateDeviceToken']);
         Route::get('/search', [UserController::class, 'search']);
         Route::put('/profile', [UserController::class, 'update']);
         Route::post('/profile/image', [UserController::class, 'uploadImage']);
