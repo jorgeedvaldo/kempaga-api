@@ -50,3 +50,7 @@ Route::get('/registar', function () {
 Route::get('/painel', function () {
     return view('site.dashboard');
 })->name('site.dashboard');
+
+Route::get('/linkstorage', function () {
+    Artisan::call('migrate');
+});
