@@ -32,7 +32,7 @@ class RegisterRequest extends FormRequest
             'password'   => ['required', 'string', 'min:6', 'confirmed'],
 
             'bi_number'  => ['required', 'string', 'max:50', 'unique:users,bi_number'],
-            'type'       => ['sometimes', 'in:personal,merchant'],
+            'type'       => ['sometimes', 'in:customer,agent,admin'],
             'image'      => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:5120'], // Máx 5MB
         ];
     }

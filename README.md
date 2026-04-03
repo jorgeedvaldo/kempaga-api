@@ -144,7 +144,7 @@ Todas as respostas são em JSON. / All responses are in JSON.
 | `password_confirmation` | `string` | ✅ | Confirmação / Confirmation |
 
 | `bi_number` | `string` | ✅ | Número do BI / ID card number (único / unique) |
-| `type` | `string` | ❌ | `personal` (padrão/default) ou/or `merchant` |
+| `type` | `string` | ❌ | `customer` (padrão/default), `agent` ou/or `admin` |
 | `image` | `file` | ❌ | Foto de perfil / Profile photo (jpeg, png, jpg; max: 5MB) |
 
 **Resposta / Response — `201 Created`:**
@@ -157,7 +157,7 @@ Todas as respostas são em JSON. / All responses are in JSON.
     "last_name": "Silva",
     "email": "joao@email.com",
     "phone": "+244912345678",
-    "type": "personal",
+    "type": "customer",
     "status": "active",
     "bi_number": "005123456LA042",
     "image_url": "/storage/avatars/abc123.jpg",
@@ -234,7 +234,7 @@ Todas as respostas são em JSON. / All responses are in JSON.
     "last_name": "Silva",
     "email": "joao@email.com",
     "phone": "+244912345678",
-    "type": "personal",
+    "type": "customer",
     "status": "active",
     "bi_number": "005123456LA042",
     "image_url": "/storage/avatars/abc123.jpg",
@@ -651,7 +651,7 @@ GET /api/users/search?query=maria
     "last_name": "Santos",
     "email": "maria@email.com",
     "phone": "+244923456789",
-    "type": "personal",
+    "type": "customer",
     "image_url": "/storage/avatars/def.jpg",
     "full_name": "Maria Santos"
   }
@@ -743,7 +743,7 @@ GET /api/users/search?query=maria
 | `phone` | `string` (unique) | Telefone / Phone |
 | `password` | `string` (hash) | Password (bcrypt hash) |
 
-| `type` | `enum` | `personal` \| `merchant` |
+| `type` | `enum` | `customer` \| `agent` \| `admin` |
 | `status` | `enum` | `active` \| `inactive` \| `blocked` |
 | `bi_number` | `string` (unique) | Número do BI / ID card number |
 | `image_url` | `string` (nullable) | URL da foto / Photo URL |

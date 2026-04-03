@@ -30,7 +30,7 @@ return new class extends Migration {
             $table->string('password');              // Hash da password
 
             // Tipo e estado da conta
-            $table->enum('type', ['personal', 'merchant'])->default('personal');
+            $table->enum('type', ['customer', 'agent', 'admin'])->default('customer');
             $table->enum('status', ['active', 'inactive', 'blocked'])->default('active');
 
             // Documentação e imagem
