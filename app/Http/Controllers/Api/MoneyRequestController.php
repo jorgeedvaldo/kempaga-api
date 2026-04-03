@@ -141,27 +141,36 @@ class MoneyRequestController extends Controller
 
         // Aceitar → processar transferência
 
-        $receiverWallet = $user->wallet;            // Kempaga (receiver do pedido)
-        $senderWallet = $moneyRequest->sender->wallet; // Quem recebe o dinheiro
-
         $amount = (float) $moneyRequest->amount;
         $charge = TransactionHelper::calculateCharge($amount, 'request');
         $netAmount = $amount - $charge;
 
-        // Verificar saldo
-        if ($receiverWallet->balance < $amount) {
-            return response()->json([
-                'message' => 'Saldo insuficiente.',
-                'balance' => $receiverWallet->balance,
-            ], 422);
-        }
+        try {
+            // Processar transferência com lockForUpdate
+            DB::transaction(function () use ($moneyRequest, $user, $amount, $charge, $netAmount) {
 
-        // Processar transferência
-        DB::transaction(function () use ($moneyRequest, $user, $receiverWallet, $senderWallet, $amount, $charge, $netAmount) {
+                // Bloquear pedido para evitar concorrência dupla-aceitação
+                $lockedRequest = \App\Models\MoneyRequest::where('id', $moneyRequest->id)->lockForUpdate()->first();
+                
+                if ($lockedRequest->status !== 'pending') {
+                    throw new \Exception('Este pedido já foi processado ou alterado.', 422);
+                }
 
-            // Debitar Kempaga (receiver do pedido)
-            $receiverWallet->balance -= $amount;
-            $receiverWallet->save();
+                $receiverWallet = \App\Models\Wallet::where('user_id', $user->id)->lockForUpdate()->first();
+                $senderWallet = \App\Models\Wallet::where('user_id', $moneyRequest->sender_id)->lockForUpdate()->first();
+
+                if (!$receiverWallet || !$senderWallet) {
+                    throw new \Exception('Carteira não encontrada.', 404);
+                }
+
+                // Verificar saldo
+                if ($receiverWallet->balance < $amount) {
+                    throw new \Exception('Saldo insuficiente.', 422);
+                }
+
+                // Debitar Kempaga (receiver do pedido)
+                $receiverWallet->balance -= $amount;
+                $receiverWallet->save();
 
             // Creditar quem pediu (sender do pedido)
             $senderWallet->balance += $netAmount;
@@ -215,8 +224,17 @@ class MoneyRequestController extends Controller
             ]);
 
             // Atualizar estado do pedido
-            $moneyRequest->update(['status' => 'accepted']);
+            $lockedRequest->update(['status' => 'accepted']);
         });
+
+        } catch (\Exception $e) {
+            $status = $e->getCode() ?: 400;
+            if ($status < 400 || $status > 500) $status = 400;
+            
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], $status);
+        }
 
         return response()->json([
             'message' => 'Pedido aceite e transferência processada.',

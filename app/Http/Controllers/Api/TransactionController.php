@@ -80,39 +80,36 @@ class TransactionController extends Controller
 
         // 2. Verificar destinatário
         $receiver = User::findOrFail($data['receiver_id']);
-        $senderWallet = $sender->wallet;
-        $receiverWallet = $receiver->wallet;
-
-        if (!$senderWallet || !$receiverWallet) {
-            return response()->json([
-                'message' => 'Carteira não encontrada.',
-            ], 404);
-        }
-
         $amount = (float) $data['amount'];
         $charge = TransactionHelper::calculateCharge($amount, 'transfer');
         $netAmount = $amount - $charge;
 
-        // 3. Verificar saldo suficiente
-        if ($senderWallet->balance < $amount) {
-            return response()->json([
-                'message' => 'Saldo insuficiente.',
-                'balance' => $senderWallet->balance,
-            ], 422);
-        }
+        try {
+            // 4. Processar a transferência dentro de uma transação DB com bloqueio pessimista
+            $result = DB::transaction(function () use ($sender, $receiver, $amount, $charge, $netAmount, $data) {
 
-        // 4. Processar a transferência dentro de uma transação DB
-        $result = DB::transaction(function () use ($sender, $receiver, $senderWallet, $receiverWallet, $amount, $charge, $netAmount, $data) {
+                // Bloquear carteiras da operação para impedir concorrência (Race Condition)
+                $senderWallet = \App\Models\Wallet::where('user_id', $sender->id)->lockForUpdate()->first();
+                $receiverWallet = \App\Models\Wallet::where('user_id', $receiver->id)->lockForUpdate()->first();
 
-            // Debitar remetente
-            $senderWallet->balance -= $amount;
-            $senderWallet->save();
+                if (!$senderWallet || !$receiverWallet) {
+                    throw new \Exception('Carteira não encontrada.', 404);
+                }
 
-            // Creditar destinatário
-            $receiverWallet->balance += $netAmount;
-            $receiverWallet->save();
+                // 3. Verificar saldo suficiente APÓS garantir o lock da linha
+                if ($senderWallet->balance < $amount) {
+                    throw new \Exception('Saldo insuficiente.', 422);
+                }
 
-            // Gerar IDs únicos
+                // Debitar remetente
+                $senderWallet->balance -= $amount;
+                $senderWallet->save();
+
+                // Creditar destinatário
+                $receiverWallet->balance += $netAmount;
+                $receiverWallet->save();
+
+                // Gerar IDs únicos
             $senderTrxId = TransactionHelper::generateTrxId();
             $receiverTrxId = TransactionHelper::generateTrxId();
 
@@ -165,6 +162,15 @@ class TransactionController extends Controller
 
             return $senderTransaction;
         });
+
+        } catch (\Exception $e) {
+            $status = $e->getCode() ?: 400;
+            if ($status < 400 || $status > 500) $status = 400;
+            
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], $status);
+        }
 
         return response()->json([
             'message'     => 'Transferência realizada com sucesso.',

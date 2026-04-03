@@ -38,14 +38,27 @@ class UserController extends Controller
         $users = User::where('id', '!=', $currentUserId)
             ->where('status', 'active')
             ->where(function ($q) use ($query) {
-                $q->where('phone', 'like', "%{$query}%")
-                  ->orWhere('email', 'like', "%{$query}%")
+                $q->where('phone', $query)
+                  ->orWhere('email', $query)
                   ->orWhere('first_name', 'like', "%{$query}%")
                   ->orWhere('last_name', 'like', "%{$query}%");
             })
             ->select('id', 'first_name', 'last_name', 'email', 'phone', 'image_url')
             ->limit(20)
             ->get();
+
+        // Ofuscar contactos se a pesquisa for apenas por nome e não exata
+        $users->transform(function ($user) use ($query) {
+            if ($user->phone !== $query && $user->email !== $query) {
+                $user->phone = mb_substr($user->phone, 0, 5) . '****' . mb_substr($user->phone, -2);
+                
+                $parts = explode('@', $user->email);
+                if (count($parts) === 2) {
+                    $user->email = mb_substr($parts[0], 0, 2) . '***@' . $parts[1];
+                }
+            }
+            return $user;
+        });
 
         return response()->json([
             'users' => $users,

@@ -72,28 +72,28 @@ class DepositController extends Controller
         $agent = $request->user();
         $data = $request->validated();
 
-        // 1. Verificar utilizador destinatário e sua carteira
+        // 1. Verificar utilizador destinatário
         $targetUser = User::findOrFail($data['user_id']);
-        $wallet = $targetUser->wallet;
-
-        if (!$wallet) {
-            return response()->json([
-                'message' => 'Carteira do utilizador não encontrada.',
-            ], 404);
-        }
 
         $amount = (float) $data['amount'];
         $charge = TransactionHelper::calculateCharge($amount, 'deposit');
         $netAmount = $amount - $charge;
 
-        // 2. Processar o depósito dentro de uma transação DB
-        $transaction = DB::transaction(function () use ($agent, $targetUser, $wallet, $amount, $charge, $netAmount, $data) {
+        try {
+            // 2. Processar o depósito dentro de uma transação DB
+            $transaction = DB::transaction(function () use ($agent, $targetUser, $amount, $charge, $netAmount, $data) {
 
-            // Creditar a carteira do utilizador
-            $wallet->balance += $netAmount;
-            $wallet->save();
+                $wallet = \App\Models\Wallet::where('user_id', $targetUser->id)->lockForUpdate()->first();
 
-            // Criar registo de transação (depósito)
+                if (!$wallet) {
+                    throw new \Exception('Carteira do utilizador não encontrada.', 404);
+                }
+
+                // Creditar a carteira do utilizador
+                $wallet->balance += $netAmount;
+                $wallet->save();
+
+                // Criar registo de transação (depósito)
             $transaction = Transaction::create([
                 'trx_id'           => TransactionHelper::generateTrxId(),
                 'user_id'          => $targetUser->id,
@@ -120,13 +120,22 @@ class DepositController extends Controller
             return $transaction;
         });
 
+        } catch (\Exception $e) {
+            $status = $e->getCode() ?: 400;
+            if ($status < 400 || $status > 500) $status = 400;
+            
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], $status);
+        }
+
         return response()->json([
             'message'     => 'Depósito realizado com sucesso.',
             'transaction' => $transaction->load([
                 'sender:id,first_name,last_name',
                 'receiver:id,first_name,last_name',
             ]),
-            'new_balance' => $wallet->balance,
+            'new_balance' => \App\Models\Wallet::where('user_id', $targetUser->id)->value('balance'),
         ], 201);
     }
 }
