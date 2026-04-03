@@ -273,27 +273,38 @@ class DatabaseSeeder extends Seeder
             }
         }
 
-        // --- 30 Depósitos ---
-        for ($i = 0; $i < 30; $i++) {
-            $user = $activeUsers->random();
-            $amount = rand(5000, 200000) / 100; // 50 - 2.000 AOA
-            $wallet = $wallets[$user->id];
+        // --- 60 Depósitos via Agente ---
+        $activeAgents = collect($users)->filter(fn($u) => $u->type === 'agent' && $u->status === 'active')->values();
+        $activeCustomers = collect($users)->filter(fn($u) => $u->type === 'customer' && $u->status === 'active')->values();
+
+        $depositNotes = [
+            'Depósito em dinheiro', 'Depósito via agente', 'Entrada de dinheiro',
+            'Carregamento de carteira', 'Depósito de cliente', 'Recarga de saldo',
+            'Depósito balcão', 'Depósito presencial', 'Carregamento em loja',
+            'Depósito de salário', 'Entrada de fundos', 'Depósito em numerário',
+        ];
+
+        for ($i = 0; $i < 60; $i++) {
+            $agent = $activeAgents->random();
+            $customer = $activeCustomers->random();
+            $amount = rand(5000, 500000) / 100; // 50 - 5.000 AOA
+            $wallet = $wallets[$customer->id];
             $balanceAfter = $wallet->balance + $amount;
 
-            $createdAt = now()->subDays(rand(0, 90))->subHours(rand(0, 23));
+            $createdAt = now()->subDays(rand(0, 90))->subHours(rand(0, 23))->subMinutes(rand(0, 59));
 
             $tx = Transaction::create([
                 'trx_id'           => 'TRX-' . strtoupper(Str::random(8)),
-                'user_id'          => $user->id,
+                'user_id'          => $customer->id,
                 'type'             => 'receive',
                 'transaction_type' => 'deposit',
                 'amount'           => $amount,
                 'charge'           => 0,
                 'net_amount'       => $amount,
                 'balance_after'    => $balanceAfter,
-                'sender_id'        => null,
-                'receiver_id'      => $user->id,
-                'note'             => 'Depósito via agente',
+                'sender_id'        => $agent->id,      // Agente que processou o depósito
+                'receiver_id'      => $customer->id,   // Cliente que recebeu
+                'note'             => $depositNotes[array_rand($depositNotes)],
                 'status'           => 'completed',
                 'created_at'       => $createdAt,
                 'updated_at'       => $createdAt,
