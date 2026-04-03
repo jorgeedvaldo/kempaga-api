@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\DepositController;
 use App\Http\Controllers\Api\MoneyRequestController;
 use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\Api\UserController;
@@ -20,6 +21,9 @@ use Illuminate\Support\Facades\Route;
 |
 | Rotas protegidas (requer token Sanctum):
 |   Autenticação, Carteira, Transações, Pedidos, Utilizadores
+|
+| Rotas de agente/admin (requer token + tipo agent/admin):
+|   POST /deposits — Registar depósito na carteira de um utilizador
 |
 */
 
@@ -71,5 +75,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/profile', [UserController::class, 'update']);
         Route::post('/profile/image', [UserController::class, 'uploadImage']);
         Route::get('/{user}', [UserController::class, 'show']);
+    });
+
+    // ──────────────────────────────────────────────────
+    //  ROTAS DE AGENTE / ADMIN
+    // ──────────────────────────────────────────────────
+
+    Route::middleware('role.agent_or_admin')->group(function () {
+        // --- Depósitos (entrada de dinheiro real) ---
+        Route::post('/deposits', [DepositController::class, 'store']);
     });
 });

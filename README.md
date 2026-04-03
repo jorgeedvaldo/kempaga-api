@@ -599,7 +599,77 @@ GET /api/money-requests?filter=received&status=pending
 
 ---
 
-### 5. 👤 Utilizadores / Users
+### 5. 🏦 Depósitos / Deposits (Agentes & Admin)
+
+> **PT:** Este endpoint permite que **agentes** e **administradores** registem a entrada de dinheiro real na carteira de um utilizador. O agente não "cria" dinheiro — apenas regista no sistema o dinheiro físico recebido do cliente. Isto garante controlo e auditoria completa.
+>
+> **EN:** This endpoint allows **agents** and **admins** to register real money deposits into a user's wallet. The agent doesn't "create" money — they only record in the system the physical cash received from the client. This ensures full control and audit trail.
+
+#### Fluxo do Depósito / Deposit Flow
+
+```
+1. Cliente entrega dinheiro ao agente / Client gives cash to agent
+2. Agente autentica-se na API / Agent authenticates via API
+3. Agente faz POST /api/deposits / Agent calls POST /api/deposits
+4. Sistema valida permissões, cria transação, atualiza saldo e regista no ledger
+   System validates permissions, creates transaction, updates balance and records ledger entry
+```
+
+#### `POST /api/deposits`
+
+**PT:** Registar um depósito de dinheiro real na carteira de um utilizador.
+**EN:** Register a real money deposit into a user's wallet.
+
+🔒 **Protegido / Protected** — `Authorization: Bearer {token}`
+🛡️ **Restrito / Restricted** — Apenas `agent` ou `admin` / Only `agent` or `admin`
+
+| Campo / Field | Tipo / Type | Obrigatório / Required | Descrição / Description |
+|---|---|---|---|
+| `user_id` | `integer` | ✅ | ID do utilizador destinatário / Target user ID |
+| `amount` | `numeric` | ✅ | Montante a depositar (min: 1) / Deposit amount (min: 1) |
+| `note` | `string` | ❌ | Nota/descrição / Note (max: 500, default: "Depósito via agente") |
+
+**Resposta / Response — `201 Created`:**
+```json
+{
+  "message": "Depósito realizado com sucesso.",
+  "transaction": {
+    "id": 10,
+    "trx_id": "TRX-A1B2C3D4",
+    "user_id": 5,
+    "type": "receive",
+    "transaction_type": "deposit",
+    "amount": "10000.00",
+    "charge": "0.00",
+    "net_amount": "10000.00",
+    "balance_after": "25000.00",
+    "sender_id": 3,
+    "receiver_id": 5,
+    "note": "Depósito via agente",
+    "status": "completed",
+    "sender": {
+      "id": 3,
+      "first_name": "Agente",
+      "last_name": "Silva"
+    },
+    "receiver": {
+      "id": 5,
+      "first_name": "João",
+      "last_name": "Santos"
+    }
+  },
+  "new_balance": 25000.00
+}
+```
+
+**Erros / Errors:**
+- `403` — Acesso negado (não é agente/admin) / Access denied (not agent/admin)
+- `404` — Carteira do utilizador não encontrada / User wallet not found
+- `422` — Validação falhou (user_id inválido, montante < 1) / Validation failed
+
+---
+
+### 6. 👤 Utilizadores / Users
 
 #### `GET /api/users/search`
 
