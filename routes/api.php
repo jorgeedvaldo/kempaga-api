@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| Rotas da API — Quem Paga
+| Rotas da API — Kempaga
 |--------------------------------------------------------------------------
 |
 | Todas as rotas são prefixadas com /api automaticamente.

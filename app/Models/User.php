@@ -10,7 +10,7 @@ use Laravel\Sanctum\HasApiTokens;
 /**
  * Modelo de Utilizador.
  *
- * Representa um utilizador da aplicação "Quem Paga".
+ * Representa um utilizador da aplicação "Kempaga".
  * Suporta autenticação via Sanctum (token).
  */
 class User extends Authenticatable

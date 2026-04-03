@@ -84,15 +84,15 @@ class MoneyRequestController extends Controller
         }
 
         $moneyRequest = MoneyRequest::create([
-            'sender_id'   => $sender->id,
+            'sender_id' => $sender->id,
             'receiver_id' => $data['receiver_id'],
-            'amount'      => $data['amount'],
-            'note'        => $data['note'] ?? null,
-            'status'      => 'pending',
+            'amount' => $data['amount'],
+            'note' => $data['note'] ?? null,
+            'status' => 'pending',
         ]);
 
         return response()->json([
-            'message'       => 'Pedido de dinheiro criado com sucesso.',
+            'message' => 'Pedido de dinheiro criado com sucesso.',
             'money_request' => $moneyRequest->load([
                 'sender:id,first_name,last_name',
                 'receiver:id,first_name,last_name',
@@ -134,14 +134,14 @@ class MoneyRequestController extends Controller
             $moneyRequest->update(['status' => 'rejected']);
 
             return response()->json([
-                'message'       => 'Pedido rejeitado.',
+                'message' => 'Pedido rejeitado.',
                 'money_request' => $moneyRequest,
             ]);
         }
 
         // Aceitar → processar transferência
 
-        $receiverWallet = $user->wallet;            // Quem paga (receiver do pedido)
+        $receiverWallet = $user->wallet;            // Kempaga (receiver do pedido)
         $senderWallet = $moneyRequest->sender->wallet; // Quem recebe o dinheiro
 
         $amount = (float) $moneyRequest->amount;
@@ -159,7 +159,7 @@ class MoneyRequestController extends Controller
         // Processar transferência
         DB::transaction(function () use ($moneyRequest, $user, $receiverWallet, $senderWallet, $amount, $charge, $netAmount) {
 
-            // Debitar quem paga (receiver do pedido)
+            // Debitar Kempaga (receiver do pedido)
             $receiverWallet->balance -= $amount;
             $receiverWallet->save();
 
@@ -167,51 +167,51 @@ class MoneyRequestController extends Controller
             $senderWallet->balance += $netAmount;
             $senderWallet->save();
 
-            // Transação de envio (para quem paga)
+            // Transação de envio (para Kempaga)
             $payerTransaction = Transaction::create([
-                'trx_id'           => TransactionHelper::generateTrxId(),
-                'user_id'          => $user->id,
-                'type'             => 'send',
+                'trx_id' => TransactionHelper::generateTrxId(),
+                'user_id' => $user->id,
+                'type' => 'send',
                 'transaction_type' => 'request',
-                'amount'           => $amount,
-                'charge'           => $charge,
-                'net_amount'       => $netAmount,
-                'balance_after'    => $receiverWallet->balance,
-                'sender_id'        => $user->id,
-                'receiver_id'      => $moneyRequest->sender_id,
-                'note'             => $moneyRequest->note,
-                'status'           => 'completed',
+                'amount' => $amount,
+                'charge' => $charge,
+                'net_amount' => $netAmount,
+                'balance_after' => $receiverWallet->balance,
+                'sender_id' => $user->id,
+                'receiver_id' => $moneyRequest->sender_id,
+                'note' => $moneyRequest->note,
+                'status' => 'completed',
             ]);
 
             // Transação de receção (para quem pediu)
             $requesterTransaction = Transaction::create([
-                'trx_id'           => TransactionHelper::generateTrxId(),
-                'user_id'          => $moneyRequest->sender_id,
-                'type'             => 'receive',
+                'trx_id' => TransactionHelper::generateTrxId(),
+                'user_id' => $moneyRequest->sender_id,
+                'type' => 'receive',
                 'transaction_type' => 'request',
-                'amount'           => $netAmount,
-                'charge'           => 0,
-                'net_amount'       => $netAmount,
-                'balance_after'    => $senderWallet->balance,
-                'sender_id'        => $user->id,
-                'receiver_id'      => $moneyRequest->sender_id,
-                'note'             => $moneyRequest->note,
-                'status'           => 'completed',
+                'amount' => $netAmount,
+                'charge' => 0,
+                'net_amount' => $netAmount,
+                'balance_after' => $senderWallet->balance,
+                'sender_id' => $user->id,
+                'receiver_id' => $moneyRequest->sender_id,
+                'note' => $moneyRequest->note,
+                'status' => 'completed',
             ]);
 
             // Lançamentos contabilísticos
             TransactionEntry::create([
                 'transaction_id' => $payerTransaction->id,
-                'wallet_id'      => $receiverWallet->id,
-                'amount'         => $amount,
-                'entry_type'     => 'debit',
+                'wallet_id' => $receiverWallet->id,
+                'amount' => $amount,
+                'entry_type' => 'debit',
             ]);
 
             TransactionEntry::create([
                 'transaction_id' => $requesterTransaction->id,
-                'wallet_id'      => $senderWallet->id,
-                'amount'         => $netAmount,
-                'entry_type'     => 'credit',
+                'wallet_id' => $senderWallet->id,
+                'amount' => $netAmount,
+                'entry_type' => 'credit',
             ]);
 
             // Atualizar estado do pedido
@@ -219,7 +219,7 @@ class MoneyRequestController extends Controller
         });
 
         return response()->json([
-            'message'       => 'Pedido aceite e transferência processada.',
+            'message' => 'Pedido aceite e transferência processada.',
             'money_request' => $moneyRequest->fresh()->load([
                 'sender:id,first_name,last_name',
                 'receiver:id,first_name,last_name',

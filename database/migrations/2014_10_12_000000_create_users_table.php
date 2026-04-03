@@ -7,14 +7,13 @@ use Illuminate\Support\Facades\Schema;
 /**
  * Migração da tabela de utilizadores.
  *
- * Estrutura principal para o sistema "Quem Paga":
+ * Estrutura principal para o sistema "Kempaga":
  * - Dados pessoais (nome, email, telefone, BI)
  * - Autenticação (password)
  * - Tipo de conta e estado
  * - Foto de perfil
  */
-return new class extends Migration
-{
+return new class extends Migration {
     public function up()
     {
         Schema::create('users', function (Blueprint $table) {

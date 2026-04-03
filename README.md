@@ -1,7 +1,7 @@
 <p align="center">
-  <h1 align="center">Quem Paga API</h1>
-  <p align="center">API RESTful para a aplicação móvel de carteira financeira "Quem Paga"</p>
-  <p align="center">RESTful API for the "Quem Paga" financial wallet mobile application</p>
+  <h1 align="center">Kempaga API</h1>
+  <p align="center">API RESTful para a aplicação móvel de carteira financeira "Kempaga"</p>
+  <p align="center">RESTful API for the "Kempaga" financial wallet mobile application</p>
 </p>
 
 <p align="center">
@@ -18,9 +18,9 @@
 
 ## 🇵🇹 Sobre / 🇬🇧 About
 
-**PT:** A Quem Paga é uma API de carteira financeira digital que permite aos utilizadores enviar e receber dinheiro, gerir o seu saldo, fazer pedidos de dinheiro e consultar o histórico de transações. Construída com Laravel 9 e autenticação via Laravel Sanctum.
+**PT:** A Kempaga é uma API de carteira financeira digital que permite aos utilizadores enviar e receber dinheiro, gerir o seu saldo, fazer pedidos de dinheiro e consultar o histórico de transações. Construída com Laravel 9 e autenticação via Laravel Sanctum.
 
-**EN:** Quem Paga is a digital financial wallet API that allows users to send and receive money, manage their balance, make money requests, and view transaction history. Built with Laravel 9 and Laravel Sanctum authentication.
+**EN:** Kempaga is a digital financial wallet API that allows users to send and receive money, manage their balance, make money requests, and view transaction history. Built with Laravel 9 and Laravel Sanctum authentication.
 
 ### Stack Tecnológica / Tech Stack
 
