@@ -23,15 +23,23 @@
             <svg data-theme-icon="dark" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
         </button>
 
-        <!-- Login (Desktop) -->
-        <a href="{{ route('site.login') }}" class="hidden md:inline-block text-slate-600 dark:text-gray-300 hover:text-brandPurple dark:hover:text-brandPurple text-[1.05rem] font-medium transition-colors">
-            Entrar
-        </a>
+        <!-- Quando NÃO logado: Entrar + Criar Conta -->
+        <div id="nav-guest" class="hidden items-center gap-4">
+            <a href="{{ route('site.login') }}" class="hidden md:inline-block text-slate-600 dark:text-gray-300 hover:text-brandPurple dark:hover:text-brandPurple text-[1.05rem] font-medium transition-colors">
+                Entrar
+            </a>
+            <a href="{{ route('site.register') }}" class="hidden md:inline-block bg-brandPurple hover:bg-brandPurpleHover text-white text-[1.05rem] font-semibold py-2.5 px-6 rounded-full transition-all duration-300 shadow-[0_0_15px_rgba(135,44,203,0.3)]">
+                Criar Conta
+            </a>
+        </div>
 
-        <!-- CTA -->
-        <a href="{{ route('site.register') }}" class="hidden md:inline-block bg-brandPurple hover:bg-brandPurpleHover text-white text-[1.05rem] font-semibold py-2.5 px-6 rounded-full transition-all duration-300 shadow-[0_0_15px_rgba(135,44,203,0.3)]">
-            Criar Conta
-        </a>
+        <!-- Quando logado: Ver Painel -->
+        <div id="nav-auth" class="hidden items-center gap-3">
+            <a href="{{ route('site.dashboard') }}" class="hidden md:inline-flex items-center gap-2 bg-brandGreen hover:bg-brandGreenHover text-white text-[1.05rem] font-semibold py-2.5 px-6 rounded-full transition-all duration-300 shadow-[0_0_15px_rgba(16,113,35,0.3)]">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                Ver Painel
+            </a>
+        </div>
 
         <!-- Mobile Menu Button -->
         <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:outline-none">
@@ -47,6 +55,46 @@
     <a href="{{ route('site.faq') }}" class="block py-2 text-slate-700 dark:text-gray-300 hover:text-brandPurple font-medium">FAQ</a>
     <a href="{{ route('site.contact') }}" class="block py-2 text-slate-700 dark:text-gray-300 hover:text-brandGreen font-medium">Contacto</a>
     <hr class="border-gray-200 dark:border-gray-700">
-    <a href="{{ route('site.login') }}" class="block py-2 text-brandPurple font-semibold">Entrar</a>
-    <a href="{{ route('site.register') }}" class="block py-3 text-center bg-brandPurple text-white font-semibold rounded-full">Criar Conta</a>
+    <!-- Mobile: Guest links -->
+    <div id="mobile-nav-guest" class="hidden space-y-3">
+        <a href="{{ route('site.login') }}" class="block py-2 text-brandPurple font-semibold">Entrar</a>
+        <a href="{{ route('site.register') }}" class="block py-3 text-center bg-brandPurple text-white font-semibold rounded-full">Criar Conta</a>
+    </div>
+    <!-- Mobile: Auth links -->
+    <div id="mobile-nav-auth" class="hidden space-y-3">
+        <a href="{{ route('site.dashboard') }}" class="flex items-center justify-center gap-2 py-3 bg-brandGreen text-white font-semibold rounded-full">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+            Ver Painel
+        </a>
+    </div>
 </div>
+
+<!-- Auth-aware navbar script -->
+<script>
+(function() {
+    const token = localStorage.getItem('kempaga_token');
+    const user = JSON.parse(localStorage.getItem('kempaga_user') || 'null');
+    const isLoggedIn = !!(token && user);
+
+    // Desktop
+    const navGuest = document.getElementById('nav-guest');
+    const navAuth = document.getElementById('nav-auth');
+    if (isLoggedIn) {
+        if (navAuth) navAuth.classList.remove('hidden');
+        if (navAuth) navAuth.classList.add('flex');
+    } else {
+        if (navGuest) navGuest.classList.remove('hidden');
+        if (navGuest) navGuest.classList.add('flex');
+    }
+
+    // Mobile
+    const mobileGuest = document.getElementById('mobile-nav-guest');
+    const mobileAuth = document.getElementById('mobile-nav-auth');
+    if (isLoggedIn) {
+        if (mobileAuth) mobileAuth.classList.remove('hidden');
+    } else {
+        if (mobileGuest) mobileGuest.classList.remove('hidden');
+    }
+})();
+</script>
+

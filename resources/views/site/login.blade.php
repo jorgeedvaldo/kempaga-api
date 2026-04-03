@@ -149,6 +149,15 @@
             else if (saved === 'dark') document.documentElement.classList.add('dark');
         })();
 
+        // Redirect to dashboard if already logged in
+        (function() {
+            const token = localStorage.getItem('kempaga_token');
+            const user = JSON.parse(localStorage.getItem('kempaga_user') || 'null');
+            if (token && user) {
+                window.location.href = '{{ route("site.dashboard") }}';
+            }
+        })();
+
         document.addEventListener('DOMContentLoaded', function() {
             const themeToggleBtns = document.querySelectorAll('[data-theme-toggle]');
             const darkIcons = document.querySelectorAll('[data-theme-icon="dark"]');

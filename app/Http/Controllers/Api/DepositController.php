@@ -30,6 +30,31 @@ use Illuminate\Support\Facades\DB;
 class DepositController extends Controller
 {
     /**
+     * Listar depósitos processados pelo agente autenticado.
+     *
+     * Retorna todas as transações do tipo 'deposit' onde o sender_id
+     * corresponde ao agente autenticado, ordenadas do mais recente.
+     *
+     * @param  Request  $request
+     * @return JsonResponse
+     */
+    public function index(\Illuminate\Http\Request $request): JsonResponse
+    {
+        $query = Transaction::where('sender_id', $request->user()->id)
+            ->where('transaction_type', 'deposit')
+            ->with(['receiver:id,first_name,last_name,image_url,email,phone']);
+
+        // Filtros opcionais
+        if ($request->has('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $deposits = $query->orderBy('created_at', 'desc')->paginate(20);
+
+        return response()->json($deposits);
+    }
+
+    /**
      * Registar um depósito na carteira de um utilizador.
      *
      * Processo:

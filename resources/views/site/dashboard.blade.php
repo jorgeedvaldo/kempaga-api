@@ -55,9 +55,13 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
                     Novo Depósito
                 </a>
-                <a href="#" data-section="transactions" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                <a href="#" data-section="deposits-history" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-                    Transações
+                    Meus Depósitos
+                </a>
+                <a href="#" data-section="transactions" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg>
+                    Minhas Transações
                 </a>
                 <a href="#" data-section="search" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
@@ -121,11 +125,11 @@
                         </div>
                         <div class="bg-white dark:bg-darkCard border border-gray-200 dark:border-gray-800 rounded-2xl p-5">
                             <div class="flex items-center justify-between mb-3">
-                                <span class="text-textMutedLight dark:text-textMutedDark text-sm">Transações Hoje</span>
+                                <span class="text-textMutedLight dark:text-textMutedDark text-sm">Depósitos Feitos</span>
                                 <div class="w-8 h-8 rounded-lg bg-brandGreen/10 flex items-center justify-center"><svg class="w-4 h-4 text-brandGreen" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg></div>
                             </div>
-                            <p id="transactions-today" class="text-2xl font-bold text-slate-900 dark:text-white">—</p>
-                            <p class="text-xs text-textMutedDark mt-1">transações</p>
+                            <p id="deposits-count" class="text-2xl font-bold text-slate-900 dark:text-white">—</p>
+                            <p class="text-xs text-textMutedDark mt-1">depósitos</p>
                         </div>
                         <div class="bg-white dark:bg-darkCard border border-gray-200 dark:border-gray-800 rounded-2xl p-5">
                             <div class="flex items-center justify-between mb-3">
@@ -157,13 +161,13 @@
                         </button>
                     </div>
 
-                    <!-- Recent Transactions -->
+                    <!-- Recent Deposits by Agent -->
                     <div class="bg-white dark:bg-darkCard border border-gray-200 dark:border-gray-800 rounded-2xl">
                         <div class="p-5 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
-                            <h3 class="font-bold text-slate-900 dark:text-white">Transações Recentes</h3>
-                            <button onclick="showSection('transactions')" class="text-brandPurple text-sm font-semibold hover:underline">Ver Todas</button>
+                            <h3 class="font-bold text-slate-900 dark:text-white">Últimos Depósitos Processados</h3>
+                            <button onclick="showSection('deposits-history')" class="text-brandPurple text-sm font-semibold hover:underline">Ver Todos</button>
                         </div>
-                        <div id="recent-transactions" class="divide-y divide-gray-100 dark:divide-gray-800">
+                        <div id="recent-deposits" class="divide-y divide-gray-100 dark:divide-gray-800">
                             <div class="p-5 text-center text-textMutedDark text-sm">A carregar...</div>
                         </div>
                     </div>
@@ -199,16 +203,45 @@
                     </div>
                 </div>
 
-                <!-- ══ TRANSACTIONS SECTION ══ -->
+                <!-- ══ DEPOSITS HISTORY SECTION ══ -->
+                <div id="section-deposits-history" class="section-content hidden">
+                    <h2 class="text-2xl font-bold mb-6">Meus Depósitos</h2>
+                    <p class="text-textMutedLight dark:text-textMutedDark text-sm mb-6">Histórico de todos os depósitos que processou para clientes.</p>
+
+                    <div class="bg-white dark:bg-darkCard border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm">
+                                <thead class="bg-gray-50 dark:bg-[#15111f]">
+                                    <tr>
+                                        <th class="text-left px-5 py-3 text-textMutedLight dark:text-textMutedDark font-medium">ID</th>
+                                        <th class="text-left px-5 py-3 text-textMutedLight dark:text-textMutedDark font-medium">Cliente</th>
+                                        <th class="text-left px-5 py-3 text-textMutedLight dark:text-textMutedDark font-medium">Montante</th>
+                                        <th class="text-left px-5 py-3 text-textMutedLight dark:text-textMutedDark font-medium">Taxa</th>
+                                        <th class="text-left px-5 py-3 text-textMutedLight dark:text-textMutedDark font-medium">Líquido</th>
+                                        <th class="text-left px-5 py-3 text-textMutedLight dark:text-textMutedDark font-medium">Nota</th>
+                                        <th class="text-left px-5 py-3 text-textMutedLight dark:text-textMutedDark font-medium">Estado</th>
+                                        <th class="text-left px-5 py-3 text-textMutedLight dark:text-textMutedDark font-medium">Data</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="deposits-table" class="divide-y divide-gray-100 dark:divide-gray-800">
+                                    <tr><td colspan="8" class="px-5 py-8 text-center text-textMutedDark">A carregar...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div id="deposits-pagination" class="flex justify-center gap-2 mt-4"></div>
+                </div>
+
+                <!-- ══ TRANSACTIONS SECTION (own transactions) ══ -->
                 <div id="section-transactions" class="section-content hidden">
-                    <h2 class="text-2xl font-bold mb-6">Histórico de Transações</h2>
+                    <h2 class="text-2xl font-bold mb-6">Minhas Transações</h2>
+                    <p class="text-textMutedLight dark:text-textMutedDark text-sm mb-6">Transações da sua própria carteira (envios, recebimentos).</p>
                     <!-- Filters -->
                     <div class="flex flex-wrap gap-3 mb-6">
                         <select id="filter-type" class="px-4 py-2 bg-white dark:bg-darkCard border border-gray-200 dark:border-gray-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brandPurple/50">
                             <option value="">Todos os Tipos</option>
                             <option value="send">Enviados</option>
                             <option value="receive">Recebidos</option>
-                            <option value="deposit">Depósitos</option>
                         </select>
                         <select id="filter-status" class="px-4 py-2 bg-white dark:bg-darkCard border border-gray-200 dark:border-gray-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brandPurple/50">
                             <option value="">Todos os Estados</option>
@@ -319,6 +352,9 @@
             document.querySelector(`.sidebar-link[data-section="${name}"]`)?.classList.add('active');
             // Close mobile sidebar
             document.getElementById('sidebar').classList.add('-translate-x-full');
+            // Auto-load data when switching sections
+            if (name === 'deposits-history') loadDepositsHistory();
+            if (name === 'transactions') loadTransactions();
         }
 
         document.addEventListener('DOMContentLoaded', async function() {
@@ -390,13 +426,14 @@
                     successEl.classList.remove('hidden');
                     document.getElementById('deposit-form').reset();
                     loadDashboard();
+                    loadDepositsHistory();
                 } catch(err) {
                     errorEl.textContent = 'Erro de ligação.'; errorEl.classList.remove('hidden');
                 } finally { spinner.classList.add('hidden'); }
             });
 
             // Transactions filter
-            document.getElementById('filter-btn').addEventListener('click', loadTransactions);
+            document.getElementById('filter-btn').addEventListener('click', () => loadTransactions());
 
             // Search
             let searchTimeout;
@@ -418,45 +455,51 @@
                     document.getElementById('wallet-balance').textContent = formatMoney(walletData.wallet.balance);
                 }
 
-                // Load transactions
-                const txRes = await fetch(`${API_BASE}/transactions?page=1`, { headers: authHeaders() });
-                if (txRes.ok) {
-                    const txData = await txRes.json();
-                    const txs = txData.data || [];
-                    document.getElementById('transactions-today').textContent = txs.length;
+                // Load deposits processed by this agent (from dedicated endpoint)
+                const depRes = await fetch(`${API_BASE}/deposits`, { headers: authHeaders() });
+                if (depRes.ok) {
+                    const depData = await depRes.json();
+                    const deps = depData.data || [];
+                    document.getElementById('deposits-count').textContent = depData.total || deps.length;
 
-                    // Calc totals
-                    let deposits = 0, sent = 0;
-                    txs.forEach(tx => {
-                        if (tx.transaction_type === 'deposit') deposits += parseFloat(tx.amount);
-                        if (tx.type === 'send') sent += parseFloat(tx.amount);
-                    });
-                    document.getElementById('total-deposits').textContent = formatMoney(deposits);
-                    document.getElementById('total-sent').textContent = formatMoney(sent);
+                    // Calc deposit totals
+                    let totalDeposits = 0;
+                    deps.forEach(d => { totalDeposits += parseFloat(d.amount); });
+                    document.getElementById('total-deposits').textContent = formatMoney(totalDeposits);
 
-                    // Recent list
-                    const container = document.getElementById('recent-transactions');
-                    if (txs.length === 0) {
-                        container.innerHTML = '<div class="p-5 text-center text-textMutedDark text-sm">Nenhuma transação encontrada.</div>';
+                    // Recent deposits list on dashboard
+                    const container = document.getElementById('recent-deposits');
+                    if (deps.length === 0) {
+                        container.innerHTML = '<div class="p-5 text-center text-textMutedDark text-sm">Nenhum depósito processado ainda.</div>';
                     } else {
-                        container.innerHTML = txs.slice(0, 5).map(tx => `
+                        container.innerHTML = deps.slice(0, 5).map(dep => `
                             <div class="flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-full ${tx.type === 'receive' ? 'bg-green-100 dark:bg-green-900/20' : 'bg-red-100 dark:bg-red-900/20'} flex items-center justify-center">
-                                        <svg class="w-4 h-4 ${tx.type === 'receive' ? 'text-green-500' : 'text-red-500'}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${tx.type === 'receive' ? 'M19 14l-7 7m0 0l-7-7m7 7V3' : 'M5 10l7-7m0 0l7 7m-7-7v18'}"/></svg>
+                                    <div class="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/20 flex items-center justify-center">
+                                        <svg class="w-4 h-4 text-brandPurple" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
                                     </div>
                                     <div>
-                                        <p class="font-semibold text-sm text-slate-900 dark:text-white">${tx.trx_id}</p>
-                                        <p class="text-xs text-textMutedDark">${tx.receiver ? `${tx.receiver.first_name} ${tx.receiver.last_name}` : '—'}</p>
+                                        <p class="font-semibold text-sm text-slate-900 dark:text-white">${dep.trx_id}</p>
+                                        <p class="text-xs text-textMutedDark">Para: ${dep.receiver ? `${dep.receiver.first_name} ${dep.receiver.last_name}` : 'ID ' + dep.receiver_id}</p>
                                     </div>
                                 </div>
                                 <div class="text-right">
-                                    <p class="font-bold text-sm ${tx.type === 'receive' ? 'text-brandGreenBright' : 'text-red-500'}">${tx.type === 'receive' ? '+' : '-'}${formatMoney(tx.amount)}</p>
-                                    <p class="text-xs text-textMutedDark">${formatDate(tx.created_at)}</p>
+                                    <p class="font-bold text-sm text-brandGreenBright">+${formatMoney(dep.amount)}</p>
+                                    <p class="text-xs text-textMutedDark">${formatDate(dep.created_at)}</p>
                                 </div>
                             </div>
                         `).join('');
                     }
+                }
+
+                // Load own transactions for "Total Enviado" stat
+                const txRes = await fetch(`${API_BASE}/transactions?page=1`, { headers: authHeaders() });
+                if (txRes.ok) {
+                    const txData = await txRes.json();
+                    const txs = txData.data || [];
+                    let sent = 0;
+                    txs.forEach(tx => { if (tx.type === 'send') sent += parseFloat(tx.amount); });
+                    document.getElementById('total-sent').textContent = formatMoney(sent);
                 }
             } catch(err) { console.error('Dashboard load error:', err); }
 
@@ -484,6 +527,45 @@
             } catch(e) {}
         }
 
+        // ── Load deposits history (agent's processed deposits) ──
+        async function loadDepositsHistory(page = 1) {
+            try {
+                const res = await fetch(`${API_BASE}/deposits?page=${page}`, { headers: authHeaders() });
+                if (res.ok) {
+                    const data = await res.json();
+                    const deps = data.data || [];
+                    const tbody = document.getElementById('deposits-table');
+                    if (deps.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="8" class="px-5 py-8 text-center text-textMutedDark">Nenhum depósito processado.</td></tr>';
+                    } else {
+                        tbody.innerHTML = deps.map(dep => `
+                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                                <td class="px-5 py-3 font-medium">${dep.trx_id}</td>
+                                <td class="px-5 py-3">${dep.receiver ? `<span class="font-semibold">${dep.receiver.first_name} ${dep.receiver.last_name}</span><br><span class="text-xs text-textMutedDark">${dep.receiver.email || dep.receiver.phone || ''}</span>` : 'ID ' + dep.receiver_id}</td>
+                                <td class="px-5 py-3 font-bold text-brandPurple">${formatMoney(dep.amount)} AOA</td>
+                                <td class="px-5 py-3 text-textMutedDark">${formatMoney(dep.charge)} AOA</td>
+                                <td class="px-5 py-3 font-semibold text-brandGreenBright">${formatMoney(dep.net_amount)} AOA</td>
+                                <td class="px-5 py-3 text-textMutedDark text-xs">${dep.note || '—'}</td>
+                                <td class="px-5 py-3">${statusBadge(dep.status)}</td>
+                                <td class="px-5 py-3 text-textMutedDark text-xs">${formatDate(dep.created_at)}</td>
+                            </tr>
+                        `).join('');
+                    }
+
+                    // Pagination
+                    const pagDiv = document.getElementById('deposits-pagination');
+                    if (data.last_page > 1) {
+                        let html = '';
+                        for (let i = 1; i <= data.last_page; i++) {
+                            html += `<button onclick="loadDepositsHistory(${i})" class="px-3 py-1 rounded-lg text-sm ${i === data.current_page ? 'bg-brandPurple text-white' : 'bg-gray-100 dark:bg-gray-800 text-slate-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'}">${i}</button>`;
+                        }
+                        pagDiv.innerHTML = html;
+                    } else pagDiv.innerHTML = '';
+                }
+            } catch(e) { console.error('Deposits load error:', e); }
+        }
+
+        // ── Load own transactions (agent's wallet) ──
         async function loadTransactions(page = 1) {
             const type = document.getElementById('filter-type').value;
             const status = document.getElementById('filter-status').value;

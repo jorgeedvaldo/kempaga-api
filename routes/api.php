@@ -83,6 +83,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::middleware('role.agent_or_admin')->group(function () {
         // --- Depósitos (entrada de dinheiro real) ---
-        Route::post('/deposits', [DepositController::class, 'store']);
+        Route::get('/deposits', [DepositController::class, 'index']);  // Listar depósitos do agente
+        Route::post('/deposits', [DepositController::class, 'store']); // Registar novo depósito
     });
 });
