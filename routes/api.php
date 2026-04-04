@@ -78,6 +78,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{user}', [UserController::class, 'show']);
     });
 
+    // --- Notificações ---
+    Route::prefix('notifications')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Api\NotificationController::class, 'index']);
+        Route::put('/read-all', [\App\Http\Controllers\Api\NotificationController::class, 'readAll']);
+        Route::put('/{id}/read', [\App\Http\Controllers\Api\NotificationController::class, 'read']);
+    });
+
     // ──────────────────────────────────────────────────
     //  ROTAS DE AGENTE / ADMIN
     // ──────────────────────────────────────────────────
