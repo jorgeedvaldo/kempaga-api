@@ -173,8 +173,8 @@ class TransactionController extends Controller
         }
 
         // Notificar o destinatário
-        \App\Helpers\ExpoPushHelper::send(
-            $receiver->device_token,
+        \App\Helpers\ExpoPushHelper::notifyUser(
+            $receiver,
             'Transferência Recebida!',
             "{$sender->first_name} acaba de te enviar {$netAmount} AOA.",
             ['type' => 'transfer_received', 'transaction_id' => $result->id]

@@ -130,8 +130,8 @@ class DepositController extends Controller
         }
 
         // Notificar utilizador sobre o depósito recebido
-        \App\Helpers\ExpoPushHelper::send(
-            $targetUser->device_token,
+        \App\Helpers\ExpoPushHelper::notifyUser(
+            $targetUser,
             'Depósito Recebido!',
             "O agente {$agent->first_name} acabou de depositar {$netAmount} AOA na sua conta.",
             ['type' => 'deposit', 'transaction_id' => $transaction->id]

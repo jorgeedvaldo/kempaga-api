@@ -93,8 +93,8 @@ class MoneyRequestController extends Controller
 
         $receiverUser = User::find($data['receiver_id']);
         if ($receiverUser) {
-            \App\Helpers\ExpoPushHelper::send(
-                $receiverUser->device_token,
+            \App\Helpers\ExpoPushHelper::notifyUser(
+                $receiverUser,
                 'Novo Pedido de Dinheiro!',
                 "{$sender->first_name} está a pedir {$data['amount']} AOA.",
                 ['type' => 'money_request_received', 'request_id' => $moneyRequest->id]
@@ -146,8 +146,8 @@ class MoneyRequestController extends Controller
                 'note'   => $data['note'] ?? $moneyRequest->note
             ]);
 
-            \App\Helpers\ExpoPushHelper::send(
-                $moneyRequest->sender->device_token,
+            \App\Helpers\ExpoPushHelper::notifyUser(
+                $moneyRequest->sender,
                 'Pedido Rejeitado',
                 "O seu pedido de {$moneyRequest->amount} AOA para {$user->first_name} foi rejeitado.",
                 ['type' => 'money_request_rejected', 'request_id' => $moneyRequest->id]
@@ -257,8 +257,8 @@ class MoneyRequestController extends Controller
         }
 
         // Notificar quem solicitou o dinheiro (sender)
-        \App\Helpers\ExpoPushHelper::send(
-            $moneyRequest->sender->device_token,
+        \App\Helpers\ExpoPushHelper::notifyUser(
+            $moneyRequest->sender,
             'Pedido Aceite!',
             "{$user->first_name} enviou os {$moneyRequest->amount} AOA que solicitou.",
             ['type' => 'money_request_accepted', 'request_id' => $moneyRequest->id]

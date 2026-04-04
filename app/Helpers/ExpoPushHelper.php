@@ -41,4 +41,16 @@ class ExpoPushHelper
             Log::error('Erro ao enviar notificação Expo: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Notificar um utilizador enviando Push e guardando na Base de Dados.
+     */
+    public static function notifyUser(\App\Models\User $user, string $title, string $body, array $data = [])
+    {
+        // 1. Guardar notificação na DB
+        $user->notify(new \App\Notifications\GeneralNotification($title, $body, $data));
+
+        // 2. Enviar Push Notification (se tiver token)
+        self::send($user->device_token, $title, $body, $data);
+    }
 }
